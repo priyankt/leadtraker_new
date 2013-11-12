@@ -1,0 +1,9 @@
+--- 
+:orm: datamapper
+:test: none
+:mock: none
+:script: none
+:renderer: erb
+:stylesheet: none
+:namespace: LeadTraker
+:migration_format: number
