@@ -3,28 +3,12 @@ LeadTraker::Api.controllers do
     # Register User
     post '/register' do
 
-        # user = User.new
-        # user.fullname = params[:fullname] if params.has_key?("fullname")
-        # user.email = params[:email] if params.has_key?("email")
-        # user.password = params[:password] if params.has_key?("password")
-        # user.phone = params[:phone] if params.has_key?("phone")
-        # user.mobile = params[:mobile] if params.has_key?("mobile")
-        # user.company = params[:company] if params.has_key?("company")
-        # user.address = params[:address] if params.has_key?("address")
-        # user.city = params[:city] if params.has_key?("city")
-        # user.state = params[:state] if params.has_key?("state")
-        # user.zip = params[:zip] if params.has_key?("zip")
-        # user.type = params[:type] if params.has_key?("type")
-        
         ret = {}
         begin
 
             if params[:type].blank?
                 raise CustomError.new(['Please select if you are an agent or lender'])
             end
-
-            # params["leadSources"] = get_lead_sources(params[:type])
-            # params["leadTypes"] = get_lead_types(params[:type])
 
             user = User.new(params)
 
@@ -41,7 +25,7 @@ LeadTraker::Api.controllers do
                     :email_type => 'new_user',
                     :user_id => user.id,
                 })
-                
+
                 status 201
                 ret = {:success => 1, :auth_token => user.auth_token}
             else

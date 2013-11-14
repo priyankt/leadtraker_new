@@ -13,8 +13,9 @@ class User
     property :state, String
     property :zip, String
     property :type , Enum[:agent, :lender], :default => :agent, :required => true
-    property :share_contact, Boolean, :default => true
+    #property :share_contact, Boolean, :default => true
     #mount_uploader :profile_pic, Uploader
+    property :sponsor_id, String
     property :auth_token, APIKey
     property :android_token, String
     property :ios_token, String
@@ -25,6 +26,9 @@ class User
 
     has n, :lead_types
     has n, :lead_sources
+    has n, :expenses
+    #has n, :user_affiliates, :child_key => [ :lender_id ]
+    #has n, :affiliates, self, :through => :user_affiliates, :via => :agent 
 
     after :save, :setup_defaults
 
@@ -63,7 +67,7 @@ class User
                 if type.valid?
                     type.save
                     lt["leadStages"].each do |ls|
-                        stage = LeadStage.new(:name => lt["name"], :lead_type_id => type.id)
+                        stage = LeadStage.new(:name => ls["name"], :lead_type_id => type.id)
                         if stage.valid?
                             stage.save
                         end

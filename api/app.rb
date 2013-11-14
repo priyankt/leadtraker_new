@@ -37,25 +37,25 @@ module LeadTraker
     # layout  :my_layout            # Layout can be in views/layouts/foo.ext or views/foo.ext (default :application)
     #
 
-    ##
-    # You can configure for a specified environment like:
-    #
-    #   configure :development do
-    #     set :foo, :bar
-    #     disable :asset_stamp # no asset timestamping for dev
-    #   end
-    #
+    configure :development do
 
-    ##
-    # You can manage errors like:
-    #
-    #   error 404 do
-    #     render 'errors/404'
-    #   end
-    #
-    #   error 505 do
-    #     render 'errors/505'
-    #   end
-    #
+        set :delivery_method, :file => {
+            :location => "#{Padrino.root}/tmp/emails",
+        }
+        
+    end
+
+    configure :production do
+
+        set :delivery_method, :smtp => {
+            :address         => LeadTrakerConstants::EMAIL_HOST,
+            :port            => LeadTrakerConstants::EMAIL_PORT,
+            :user_name       => LeadTrakerConstants::EMAIL_FROM,
+            :password        => LeadTrakerConstants::EMAIL_KEY,
+        }
+        
+    end
+    
   end
+  
 end

@@ -6,19 +6,20 @@ class SendEmail
   	#@retry_delay = 120
 
 	def self.perform(params)
+		puts params.inspect
 
 		case params['mailer_name']
-			when 'notifier'
+			when 'user_notifier'
 				case params['email_type']
 					when 'forgot_password'
-						user = User.get(params['id'])
-						new_password = params['new_password']
-						LeadTraker::App.deliver(:notifier, :forgot_password, user, new_password)
+						user = User.get(params['user_id'])
+						new_password = params['new_passwd']
+						LeadTraker::Api.deliver(:user_notifier, :forgot_password, user, new_password)
 					when 'new_user'
 						user = User.get(params['id'])
-						LeadTraker::App.deliver(:notifier, :new_user, user)
+						LeadTraker::Api.deliver(:user_notifier, :new_user, user)
 					else
-						LeadTraker::App.deliver(:notifier, :invalid_email_type, params['email_type'])
+						LeadTraker::Api.deliver(:user_notifier, :invalid_email_type, params['email_type'])
 				end
 		end
 		

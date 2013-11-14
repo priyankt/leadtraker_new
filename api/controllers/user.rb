@@ -40,11 +40,20 @@ LeadTraker::Api.controllers :user do
         rescue CustomError => ce
 
             status 400
-            ret = {:success => 0, :errors => ce.errors}
+            ret = {:success => false, :errors => ce.errors}
 
         end
 
         ret.to_json
+
+    end
+
+    get '/setup' do
+
+        ret = get_setup_data(@user)
+        status 200
+
+        return ret.to_json
 
     end
 
