@@ -12,10 +12,13 @@ LeadTraker::Api.controllers :leads do
     get '/' do
 
         ret = []
-        data = {}
-
+        
         lead_users = LeadUser.all(:user_id => @user.id, :status => :active)
+
         lead_users.each do |lu|
+
+            data = {}
+            
             if lu.lead_type.present?
                 data[:lead_type] = {
                     :id => lu.lead_type.id, 
@@ -35,12 +38,19 @@ LeadTraker::Api.controllers :leads do
                     :value => lu.primary_contact.phone_numbers.first.value
                 }]
             }
+
             data[:dttm] = lu.created_at
-            data[:address] = lu.lead.prop_address
+            data[:prop_address] = lu.lead.prop_address
+            if lu.current_stage.present?
+                stage_id = lu.current_stage.lead_stage.id
+                stage_name = lu.current_stage.lead_stage.name
+            end
             data[:lead_stage] = {
-                :id => lu.current_stage.lead_stage.id, 
-                :name => lu.current_stage.lead_stage.id
+                :id => (stage_id.present? ? stage_id : nil), 
+                :name => (stage_name.present? ? stage_name : nil)
             }
+            
+            data[:agent_name] = lu.lead.agent.fullname
 
             ret.push(data)
         end

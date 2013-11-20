@@ -19,7 +19,7 @@ class LeadUser
   	belongs_to :lead
   	belongs_to :lead_type, :required => false
   	belongs_to :lead_source, :required => false
-  	belongs_to :current_stage, :model => 'StageDate'
+  	belongs_to :current_stage, :model => 'StageDate', :required => false
   	# which agent gave this lead
   	belongs_to :agent, :model => 'User', :required => false
 
