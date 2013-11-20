@@ -27,8 +27,10 @@ class User
     has n, :lead_types
     has n, :lead_sources
     has n, :expenses
-    #has n, :user_affiliates, :child_key => [ :lender_id ]
-    #has n, :affiliates, self, :through => :user_affiliates, :via => :agent 
+    has n, :updates
+    has n, :contacts
+    has n, :user_affiliates, :child_key => [ :lender_id ]
+    has n, :affiliates, self, :through => :user_affiliates, :via => :agent 
 
     after :save, :setup_defaults
 
@@ -44,8 +46,8 @@ class User
             end
 
             lead_sources.each do |ls|
-
-                source = LeadSource.new(:name => ls["name"], :user_id => self.id)
+                ls["user_id"] = self.id
+                source = LeadSource.new(ls)
                 if source.valid?
                     source.save
                 end
@@ -63,15 +65,27 @@ class User
             end
 
             lead_types.each do |lt|
-                type = LeadType.new(:name => lt["name"], :user_id => self.id)
+                lt["user_id"] = self.id
+                type = LeadType.new(lt)
                 if type.valid?
                     type.save
-                    lt["leadStages"].each do |ls|
-                        stage = LeadStage.new(:name => ls["name"], :lead_type_id => type.id)
-                        if stage.valid?
-                            stage.save
-                        end
-                    end
+                end
+            end
+
+        end
+
+        if self.expenses.count == 0
+
+            if self.type == :agent
+                expenses = JSON.parse File.read("public/agent_expense.json")
+            else
+                expenses = JSON.parse File.read("public/agent_expense.json")
+            end
+            expenses.each do |e|
+                e["user_id"] = self.id
+                expense = Expense.new(e)
+                if expense.valid?
+                    expense.save
                 end
             end
 

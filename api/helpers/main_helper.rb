@@ -13,4 +13,16 @@ LeadTraker::Api.helpers do
 
     end
 
+    def get_true
+
+    	return true
+
+    end
+
+    def get_false
+
+    	return false
+    	
+    end
+
 end

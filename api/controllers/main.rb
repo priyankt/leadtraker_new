@@ -27,7 +27,8 @@ LeadTraker::Api.controllers do
                 })
 
                 status 201
-                ret = {:success => 1, :auth_token => user.auth_token}
+
+                ret = {:success => get_true(), :auth_token => user.auth_token}
             else
                 raise CustomError.new(get_formatted_errors(user.errors))
             end
@@ -35,7 +36,7 @@ LeadTraker::Api.controllers do
         rescue CustomError => ce
 
             status 400
-            ret = {:success => 0, :errors => ce.errors}
+            ret = {:success => get_false(), :errors => ce.errors}
 
         end
         
@@ -56,7 +57,7 @@ LeadTraker::Api.controllers do
                     user.auth_token = (User.new).auth_token
                     user.save
                 end
-                ret = {:success => 1, :auth_token => user.auth_token}
+                ret = {:success => get_true(), :auth_token => user.auth_token}
             else
                 raise CustomError.new(['Invalid user or password. Please try again.'])
             end
@@ -66,7 +67,7 @@ LeadTraker::Api.controllers do
         rescue CustomError => ce
 
             status 400
-            ret = {:success => 0, :errors => ce.errors}
+            ret = {:success => get_false(), :errors => ce.errors}
 
         end
         
@@ -102,7 +103,7 @@ LeadTraker::Api.controllers do
                     :new_passwd => new_passwd
                 })
                 status 200
-                ret = {:success => 1}
+                ret = {:success => get_true()}
             else
                 raise CustomError.new(get_formatted_errors(user.errors))
             end
@@ -110,7 +111,7 @@ LeadTraker::Api.controllers do
         rescue CustomError => ce
 
             status 400
-            ret = {:success => 0, :errors => ce.errors}
+            ret = {:success => get_false(), :errors => ce.errors}
 
         end
         

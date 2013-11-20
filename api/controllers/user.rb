@@ -12,7 +12,7 @@ LeadTraker::Api.controllers :user do
     # Change User Password
     post '/change_password' do
         
-        ret = {:success => 0}
+        ret = {:success => get_true()}
         begin
 
             old_passwd = params[:old_passwd] if params.has_key?("old_passwd")
@@ -25,10 +25,9 @@ LeadTraker::Api.controllers :user do
                     if @user.valid?
                         @user.save
                         status 200
-                        ret = {:success => 1}
+                        ret = {:success => get_true()}
                     else
-                        status 400
-                        ret = {:success => 0, :errors => get_formatted_errors(@user.errors)}
+                        raise CustomError.new(get_formatted_errors(@user.errors))
                     end
                 else
                     raise CustomError.new(['You have provided an invalid current password. Please try again.'])
@@ -40,7 +39,7 @@ LeadTraker::Api.controllers :user do
         rescue CustomError => ce
 
             status 400
-            ret = {:success => false, :errors => ce.errors}
+            ret = {:success => get_false(), :errors => ce.errors}
 
         end
 
@@ -48,11 +47,16 @@ LeadTraker::Api.controllers :user do
 
     end
 
-    get '/setup' do
+    get '/updates' do
 
-        ret = get_setup_data(@user)
-        status 200
+        dttm = params[:dttm]
 
+        if dttm.present?
+            ret = @user.updates.all(:created_at.gt => dttm)
+        else
+            ret = @user.updates
+        end
+        
         return ret.to_json
 
     end

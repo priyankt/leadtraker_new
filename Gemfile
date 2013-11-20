@@ -25,6 +25,7 @@ gem 'dm-types'
 gem 'dm-core'
 gem 'dm-serializer'
 gem 'dm-transactions'
+gem 'dm-deep_cloning'
 
 # resque libraries
 gem 'resque'

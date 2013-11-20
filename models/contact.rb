@@ -8,7 +8,7 @@ class Contact
 	property :address, String
 	property :city, String
 	property :state, String
-	property :zip, Integer
+	property :zip, String
 
 	property :created_at, DateTime, :lazy => true
 	property :updated_at, DateTime, :lazy => true
@@ -18,5 +18,11 @@ class Contact
 	has n, :email_addresses
 
 	belongs_to :user
+
+	after :save, :update_affiliates
+
+	def update_affiliates
+		
+	end
   
 end

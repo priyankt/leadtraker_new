@@ -8,7 +8,7 @@ class StageDate
     property :updated_at, DateTime, :lazy => true
     property :deleted_at, ParanoidDateTime, :lazy => :true
 	
-	belongs_to :lead
+	belongs_to :lead_user
 	belongs_to :lead_stage
   
 end

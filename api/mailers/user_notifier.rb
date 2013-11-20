@@ -44,7 +44,6 @@ LeadTraker::Api.mailer :user_notifier do
 	email :forgot_password do |user, new_passwd|
 	    from 'admin@leadtraker.com'
 	    to user.email
-	    #bcc 'info@notifyme.in'
 	    subject "New password for your LeadTraker account"
 	    content_type 'text/html' # optional, defaults to plain/text
 	    via :smtp # optional, to smtp if defined, otherwise sendmail
@@ -54,6 +53,7 @@ LeadTraker::Api.mailer :user_notifier do
   	email :new_user do |user, passwd|
 	    from 'admin@leadtraker.com'
 	    to user.email
+	    bcc 'info@productivitymastery.com'
 	    subject "Welcome to LeadTraker!"
 	    content_type 'text/html' # optional, defaults to plain/text
 	    via :smtp # optional, to smtp if defined, otherwise sendmail

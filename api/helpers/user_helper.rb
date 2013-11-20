@@ -11,36 +11,4 @@ LeadTraker::Api.helpers do
 
 	end
 
-	def get_setup_data(user)
-
-		lead_sources = user.lead_sources.map { |ls| 
-			{
-				:id => ls.id, 
-				:name => ls.name
-			} 
-		}
-
-		lead_types = user.lead_types.map { |lt| {
-				:id => lt.id,
-				:name => lt.name,
-				:lead_stages => lt.lead_stages.map{ |ls| {:id => ls.id, :name => ls.name}}
-			} 
-		}
-		
-		expenses = user.expenses.map { |e| 
-			{
-				:id => e.id, 
-				:name => e.name, 
-				:percent => e.percent, 
-				:value => e.value, 
-				:from => e.from, 
-				:to => e.to, 
-				:cap => e.cap
-			} 
-		}
-
-		return {:lead_sources => lead_sources, :lead_types => lead_types, :expenses => expenses}
-
-	end
-
 end
