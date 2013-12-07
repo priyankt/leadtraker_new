@@ -49,10 +49,10 @@ namespace :deploy do
 		run "ln -nfs #{deploy_to}/shared/config/database.rb #{current_release}/config/database.rb"
 	end
 
-	desc "Symlinks the upload directory"
-	task :symlink_upload, :roles => :app do
-		run "ln -nfs #{deploy_to}/shared/images/uploads #{current_release}/public/images/uploads"
-	end
+	# desc "Symlinks the upload directory"
+	# task :symlink_upload, :roles => :app do
+	# 	run "ln -nfs #{deploy_to}/shared/images/uploads #{current_release}/public/images/uploads"
+	# end
 
 	desc "Symlinks the lib/leadtraker_constants.rb"
 	task :symlink_constants, :roles => :app do
@@ -61,7 +61,7 @@ namespace :deploy do
 	end
 end
 
-after 'deploy:update_code', 'deploy:symlink_db', 'deploy:symlink_upload', 'deploy:symlink_constants'
+after 'deploy:update_code', 'deploy:symlink_db', 'deploy:symlink_constants'
 
 namespace :gems do
   	task :install do
