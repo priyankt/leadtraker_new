@@ -29,6 +29,7 @@ gem 'dm-types'
 gem 'dm-core'
 gem 'dm-serializer'
 gem 'dm-transactions'
+gem 'dm-postgres-adapter'
 
 # resque libraries
 gem 'resque'
