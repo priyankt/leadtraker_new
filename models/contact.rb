@@ -12,7 +12,7 @@ class Contact
 
 	property :created_at, DateTime, :lazy => true
 	property :updated_at, DateTime, :lazy => true
-	property :deleted_at, DateTime, :lazy => true
+	property :deleted_at, ParanoidDateTime, :lazy => true
 
 	has n, :phone_numbers
 	has n, :email_addresses
@@ -23,6 +23,33 @@ class Contact
 
 	def update_affiliates
 		
+	end
+
+	def format_for_app
+		
+		return {
+            :id => self.id,
+            :name => self.name,
+            :company => self.company,
+            :title => self.title,
+            :address => self.address,
+            :city => self.city,
+            :state => self.state,
+            :zip => self.zip,
+            :phone_numbers => self.phone_numbers.map{ |p|
+                {
+                    :type => p.type,
+                    :value => p.value
+                }
+            },
+            :email_addresses => self.email_addresses.map { |e|
+                {
+                    :type => e.type,
+                    :value => e.value
+                }
+            }
+        }
+
 	end
   
 end

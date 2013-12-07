@@ -1,8 +1,9 @@
-class Note
+class Appointment
 	include DataMapper::Resource
 
 	property :id, Serial
 	property :text, String
+	property :dttm, DateTime, :required => true
 	property :shared, Boolean, :default => true
 
 	property :created_at, DateTime, :lazy => true
@@ -19,8 +20,8 @@ class Note
     	LeadUser.all(:lead_id => self.lead_id).each do |alu|
     		if self.shared and alu.user_id != self.user_id
     			user_update = Update.new(
-    				:activity_type => :new_shared_note,
-    				:msg => "New note for lead '#{alu.primary_contact.name}'",
+    				:activity_type => :new_shared_task,
+    				:msg => "New task added for lead '#{alu.primary_contact.name}'",
     				:data => {:lead_id => self.lead_id},
     				:user_id => alu.user_id
     			)
@@ -33,5 +34,5 @@ class Note
     	end
 
     end
-
+  
 end

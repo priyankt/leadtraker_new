@@ -11,48 +11,35 @@ LeadTraker::Api.controllers :leads do
 
     get '/' do
 
-        ret = []
-        
-        lead_users = LeadUser.all(:user_id => @user.id, :status => :active)
+        ret = get_user_leads(@user)
 
-        lead_users.each do |lu|
+        return ret.to_json
 
-            data = {}
-            
-            if lu.lead_type.present?
-                data[:lead_type] = {
-                    :id => lu.lead_type.id, 
-                    :name => lu.lead_type.name
-                }
-            else
-                data[:lead_type] = {
-                    :id => nil, 
-                    :name => nil
-                }
+    end
+
+    # Set lead type for leads
+    put '/update' do
+
+        begin
+
+            leads = JSON.parse params[:leads]
+            leads.each do |l|
+                lead_user = LeadUser.first(:lead_id => l['lead_id'], :user_id => @user.id)
+                if l['lead_type_id'].present? and l['lead_type_id'] != 0
+                    lead_user.update(:lead_type_id => l['lead_type_id'])
+                else
+                    lead_user.update(:status => :inactive)
+                end
             end
 
-            data[:contact] = {
-                :name => lu.primary_contact.name, 
-                :phone_numbers => [{
-                    :type => lu.primary_contact.phone_numbers.first.type, 
-                    :value => lu.primary_contact.phone_numbers.first.value
-                }]
-            }
-
-            data[:dttm] = lu.created_at
-            data[:prop_address] = lu.lead.prop_address
-            if lu.current_stage.present?
-                stage_id = lu.current_stage.lead_stage.id
-                stage_name = lu.current_stage.lead_stage.name
-            end
-            data[:lead_stage] = {
-                :id => (stage_id.present? ? stage_id : nil), 
-                :name => (stage_name.present? ? stage_name : nil)
-            }
+            status 200
+            ret = get_user_leads(@user)
             
-            data[:agent_name] = lu.lead.agent.fullname
+        rescue CustomError => ce
 
-            ret.push(data)
+            status 400
+            ret = {:success => get_false(), :errors => ce.errors}
+
         end
 
         return ret.to_json

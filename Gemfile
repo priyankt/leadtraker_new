@@ -15,7 +15,11 @@ gem 'rake'
 
 # Component requirements
 gem 'erubis', '~> 2.7.0'
-gem 'dm-sqlite-adapter'
+
+group :development do
+	gem 'dm-sqlite-adapter'
+end
+
 gem 'dm-validations'
 gem 'dm-timestamps'
 gem 'dm-migrations'
@@ -25,7 +29,6 @@ gem 'dm-types'
 gem 'dm-core'
 gem 'dm-serializer'
 gem 'dm-transactions'
-gem 'dm-deep_cloning'
 
 # resque libraries
 gem 'resque'

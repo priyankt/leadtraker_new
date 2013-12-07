@@ -18,6 +18,15 @@ class SendEmail
 					when 'new_user'
 						user = User.get(params['id'])
 						LeadTraker::Api.deliver(:user_notifier, :new_user, user)
+					when 'invite_agent'
+						lender = User.get(params['lender_id'])
+						LeadTraker::Api.deliver(:user_notifier, :invite_agent, lender, params['agent_email'])
+					when 'invite_lender'
+						agent = User.get(params['agent_id'])
+						LeadTraker::Api.deliver(:user_notifier, :invite_lender, agent, params['lender_email'])
+					when 'user_update'
+						user = User.get(params['user_id'])
+						LeadTraker::Api.deliver(:user_notifier, :user_update, user, params['msg'])
 					else
 						LeadTraker::Api.deliver(:user_notifier, :invalid_email_type, params['email_type'])
 				end

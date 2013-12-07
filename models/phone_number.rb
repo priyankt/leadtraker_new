@@ -7,7 +7,7 @@ class PhoneNumber
 
 	property :created_at, DateTime, :lazy => true
   	property :updated_at, DateTime, :lazy => true
-  	property :deleted_at, DateTime, :lazy => true
+  	property :deleted_at, ParanoidDateTime, :lazy => true
 
   	belongs_to :contact
   

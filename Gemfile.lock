@@ -14,11 +14,6 @@ GEM
       dm-core (~> 1.2.0)
     dm-core (1.2.1)
       addressable (~> 2.3)
-    dm-deep_cloning (1.0.3)
-      dm-core (~> 1.0)
-      dm-core (~> 1.2.0)
-      dm-transactions (~> 1.0)
-      dm-transactions (~> 1.2.0)
     dm-do-adapter (1.2.0)
       data_objects (~> 0.10.6)
       dm-core (~> 1.2.0)
@@ -144,7 +139,6 @@ DEPENDENCIES
   dm-aggregates
   dm-constraints
   dm-core
-  dm-deep_cloning
   dm-migrations
   dm-serializer
   dm-sqlite-adapter

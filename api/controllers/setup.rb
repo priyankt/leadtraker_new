@@ -11,7 +11,7 @@ LeadTraker::Api.controllers :setup do
 
     get '/' do
 
-        ret = get_setup_data(@user, params[:new_lead])
+        ret = get_setup_data(@user, (params[:new_lead].present? ? params[:new_lead].to_i : nil) )
         status 200
 
         return ret.to_json
@@ -100,11 +100,9 @@ LeadTraker::Api.controllers :setup do
                 lead_type.update(:name => params[:name])
             end
 
-            puts params.inspect
             lead_stages = JSON.parse(params[:lead_stages])
             lead_stages.each do |ls|
                 if ls['id'] > 0
-                    puts ls['id']
                     stage = LeadStage.get(ls['id'])
                     stage.update(:name => ls['name'])
                 else

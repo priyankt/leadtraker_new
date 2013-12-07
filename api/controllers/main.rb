@@ -12,11 +12,30 @@ LeadTraker::Api.controllers do
 
             user = User.new(params)
 
+            # if sponsor id then add to affiliates
+            sponsor = nil
+            if user.type == :agent and user.sponsor_id.present?
+                sponsor = User.first(:sponsor_id => user.sponsor_id, :type => :lender)
+                if sponsor.blank?
+                    raise CustomError.new(['Invalid sponsor. Please try again.'])
+                else
+                    user.user_affiliates << UserAffiliate.new(:lender => sponsor, :agent => user)
+                end
+            end
+
             if user.valid?
 
                 User.transaction do
                     begin
                         user.save
+                        # add to user update for lender/sponsor
+                        if sponsor.present?
+                            update = Update.create(
+                                :activity_type => :request_received, 
+                                :user_id => sponsor.id, 
+                                :msg => "New affiliate request from agent #{user.fullname}"
+                            )
+                        end
                     end
                 end
 
@@ -28,7 +47,7 @@ LeadTraker::Api.controllers do
 
                 status 201
 
-                ret = {:success => get_true(), :auth_token => user.auth_token}
+                ret = {:success => get_true(), :auth_token => user.auth_token, :id => user.id, :type => user.type}
             else
                 raise CustomError.new(get_formatted_errors(user.errors))
             end
@@ -40,6 +59,7 @@ LeadTraker::Api.controllers do
 
         end
         
+        puts ret.inspect
         return ret.to_json
 
     end
@@ -57,7 +77,7 @@ LeadTraker::Api.controllers do
                     user.auth_token = (User.new).auth_token
                     user.save
                 end
-                ret = {:success => get_true(), :auth_token => user.auth_token}
+                ret = {:success => get_true(), :auth_token => user.auth_token, :id => user.id, :type => user.type}
             else
                 raise CustomError.new(['Invalid user or password. Please try again.'])
             end

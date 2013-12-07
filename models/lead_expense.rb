@@ -17,7 +17,7 @@ class LeadExpense
     property :updated_at, DateTime, :lazy => true
     property :deleted_at, ParanoidDateTime, :lazy => :true
 
-    belongs_to :expense
+    belongs_to :expense, :required => false
     belongs_to :lead_user
   
 end

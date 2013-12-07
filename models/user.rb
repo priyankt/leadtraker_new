@@ -29,10 +29,23 @@ class User
     has n, :expenses
     has n, :updates
     has n, :contacts
-    has n, :user_affiliates, :child_key => [ :lender_id ]
-    has n, :affiliates, self, :through => :user_affiliates, :via => :agent 
 
+    has n, :user_affiliates, :child_key => [ :agent_id ]
+    has n, :lenders, self, :through => :user_affiliates, :via => :lender 
+
+    before :save, :generate_sponsor_id
     after :save, :setup_defaults
+    
+    # Set sponsor id as email id only if type is lender
+    def generate_sponsor_id
+
+        if self.type == :lender
+            self.sponsor_id = self.email
+        else
+            self.sponsor_id = nil
+        end
+
+    end
 
     def setup_defaults
 
