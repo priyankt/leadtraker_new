@@ -11,7 +11,21 @@ LeadTraker::Api.controllers :setup do
 
     get '/' do
 
-        ret = get_setup_data(@user, (params[:new_lead].present? ? params[:new_lead].to_i : nil) )
+        logger.debug params.inspect
+        ret = {}
+
+        condt = {}
+        if params[:updated_at].present?
+            condt = {:updated_at.gt => params[:updated_at]}
+        end
+        logger.debug condt.inspect
+
+        ret[:lead_sources] = @user.lead_sources.all(condt).map { |ls| ls.format_for_app }
+        ret[:lead_types] = @user.lead_types.all(condt).map { |lt| lt.format_for_app }
+        ret[:expenses] = @user.expenses.all(condt).map { |e| e.format_for_app }
+        ret[:contacts] = @user.contacts.all(condt).map { |c| c.format_for_app }
+        ret[:sms_patterns] = SmsPattern.all(condt).map { |sp| sp.format_for_app }
+
         status 200
 
         return ret.to_json
@@ -27,7 +41,7 @@ LeadTraker::Api.controllers :setup do
             if lead_source.valid?
                 lead_source.save
                 status 201
-                ret = {:success => get_true(), :id => lead_source.id}
+                ret = lead_source.format_for_app
             else
                 raise CustomError.new(get_formatted_errors(lead_source.errors))
             end
@@ -44,13 +58,17 @@ LeadTraker::Api.controllers :setup do
     end
 
     put '/lead_source/:id' do
+        logger.debug params.inspect
 
         begin
 
+            if params[:id].blank?
+                raise "Invalid lead source. Please try again"
+            end
             lead_source = LeadSource.get(params[:id])
             lead_source.update(:name => params[:name])
             status 200
-            ret = {:success => get_true(), :id => lead_source.id}
+            ret = lead_source.format_for_app
 
         rescue CustomError => ce
 
@@ -67,11 +85,11 @@ LeadTraker::Api.controllers :setup do
 
         begin
             
-            lead_type = LeadType.new(:name => params[:name], :lead_stages => JSON.parse(params[:lead_stages]), :user_id => @user.id )
+            lead_type = LeadType.new(:name => params[:name], :share_leads => params[:share_leads], :lead_stages => JSON.parse(params[:lead_stages]), :user_id => @user.id )
             if lead_type.valid?
                 lead_type.save
                 status 201
-                ret = {:success => get_true(), :id => lead_type.id}
+                ret = lead_type.format_for_app
             else
                 raise CustomError.new(get_formatted_errors(lead_type.errors))
             end
@@ -96,9 +114,7 @@ LeadTraker::Api.controllers :setup do
                 raise CustomError.new(['Invalid lead type provided.'])
             end
 
-            if params[:name] != lead_type.name
-                lead_type.update(:name => params[:name])
-            end
+            lead_type.update(:name => params[:name], :share_leads => params[:share_leads])
 
             lead_stages = JSON.parse(params[:lead_stages])
             lead_stages.each do |ls|
@@ -117,7 +133,7 @@ LeadTraker::Api.controllers :setup do
             end
 
             status 200
-            ret = {:success => get_true()}
+            ret = lead_type.format_for_app
 
         rescue CustomError => ce
 
@@ -131,6 +147,7 @@ LeadTraker::Api.controllers :setup do
     end
 
     post '/expense' do
+        logger.debug params.inspect
 
         begin
             
@@ -146,7 +163,7 @@ LeadTraker::Api.controllers :setup do
             if expense.valid?
                 expense.save
                 status 201
-                ret = {:success => get_true(), :id => expense.id}
+                ret = expense.format_for_app
             else
                 raise CustomError.new(get_formatted_errors(expense.errors))
             end
@@ -164,6 +181,7 @@ LeadTraker::Api.controllers :setup do
 
     put '/expense/:id' do
 
+        logger.debug params.inspect
         begin
             
             expense = Expense.get(params[:id])
@@ -176,7 +194,7 @@ LeadTraker::Api.controllers :setup do
                 :to => params['to'],
             )
             status 200
-            ret = {:success => get_true(), :id => expense.id}
+            ret = expense.format_for_app
 
         rescue CustomError => ce
 

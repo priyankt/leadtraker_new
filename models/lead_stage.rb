@@ -11,4 +11,14 @@ class LeadStage
 
     belongs_to :lead_type
 
+    def format_for_app
+    	
+    	return {
+    		:id => self.id,
+    		:name => self.name,
+    		:description => self.description
+    	}
+
+    end
+
 end

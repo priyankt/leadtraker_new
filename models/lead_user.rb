@@ -50,16 +50,13 @@ class LeadUser
 
   	def update_affiliates
 
-  		if self.user.type == :agent
+  		if self.user.type == :agent and self.lead_type.share_leads == true
   			affiliated_lenders = self.user.user_affiliates(:status => :accepted)
   			affiliated_lenders.each do |al|
   				lender = al.lender
           lead_source = lender.lead_sources.first(:name.like => '%Agent Referral%')
           primary_contact = find_or_new(lender, self.primary_contact)
           
-          puts "=============== primary_contact =============="
-          puts primary_contact.inspect
-
           secondary_contact = nil
           if self.secondary_contact.present?
             secondary_contact = find_or_new(lender, self.secondary_contact)
@@ -86,12 +83,6 @@ class LeadUser
 
     def find_or_new(user, contact)
 
-      puts "---- LENDER -------"
-      puts user.inspect
-
-      puts "---- CONTACT -------"
-      puts contact.inspect
-          
       user_contact = nil
       
       matching_entity = user.contacts.phone_numbers.first(:value => contact.phone_numbers.map{ |ph| ph.value })
@@ -102,9 +93,6 @@ class LeadUser
       if matching_entity.present?
         user_contact = matching_entity.contact
       end
-
-      puts "----- USER CONTACT ------"
-      puts user_contact.inspect
 
       # create new contact if contact not already available
       if user_contact.blank?
@@ -133,9 +121,6 @@ class LeadUser
 
         user_contact = Contact.new(user_contact_hash)
         
-        puts "------- USER CONTACT AGAIN ------"
-        puts user_contact.inspect
-
         if user_contact.valid?
           user_contact.save
         else

@@ -1,9 +1,9 @@
 padrino_root = File.expand_path(File.join(File.dirname(__FILE__),'..'))
 
 God.watch do |w|
-	w.name = 'resque'
+	w.name = 'leadtraker-resque'
 	w.interval = 30.seconds
-	w.env = { 'RAILS_ENV' => 'production', 'QUEUE' => '*', 'BUNDLE_GEMFILE' => "#{padrino_root}/Gemfile" }
+	w.env = { 'RAILS_ENV' => 'production', 'QUEUE' => 'leadtraker_send_email,leadtraker_send_notification', 'BUNDLE_GEMFILE' => "#{padrino_root}/Gemfile" }
 	w.dir = "#{padrino_root}"
 	w.start = "bundle exec padrino rake resque:work -e production"
 	w.start_grace = 10.seconds

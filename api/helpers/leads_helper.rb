@@ -14,39 +14,18 @@ LeadTraker::Api.helpers do
             data = {}
             
             if lu.lead_type.present?
-                data[:lead_type] = {
-                    :id => lu.lead_type.id, 
-                    :name => lu.lead_type.name
-                }
+                data[:lead_type] = lu.lead_type.format_for_app
             else
-                data[:lead_type] = {
-                    :id => nil, 
-                    :name => nil
-                }
+                data[:lead_type] = {:id => nil, :name => nil}
             end
 
-            data[:contact] = {
-                :name => lu.primary_contact.name, 
-                :phone_numbers => [{
-                    :type => lu.primary_contact.phone_numbers.first.type, 
-                    :value => lu.primary_contact.phone_numbers.first.value
-                }],
-                :email_addresses => [{
-                    :type => lu.primary_contact.email_addresses.first.type, 
-                    :value => lu.primary_contact.email_addresses.first.value
-                }]
-            }
+            data[:contact] = lu.primary_contact.format_for_app
 
             data[:dttm] = lu.created_at
             data[:prop_address] = "#{lu.lead.prop_address}, #{lu.lead.prop_city}" 
             if lu.current_stage.present?
-                stage_id = lu.current_stage.lead_stage.id
-                stage_name = lu.current_stage.lead_stage.name
+                data[:lead_stage] = lu.current_stage.format_for_app
             end
-            data[:lead_stage] = {
-                :id => (stage_id.present? ? stage_id : nil), 
-                :name => (stage_name.present? ? stage_name : nil)
-            }
             
             data[:agent_name] = lu.lead.agent.fullname
 

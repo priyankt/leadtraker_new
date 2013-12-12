@@ -36,7 +36,7 @@ LeadTraker::Api.controllers :contact do
             if contact.valid?
                 contact.save
                 status 201
-                ret = {:success => true, :id => contact.id}
+                ret = contact.format_for_app
             else
                 raise CustomError.new(get_formatted_errors(contact.errors))
             end
@@ -44,7 +44,7 @@ LeadTraker::Api.controllers :contact do
         rescue CustomError => ce
 
             status 400
-            ret = {:success => false, :errors => ce.errors}
+            ret = {:success => get_false(), :errors => ce.errors}
             
         end
 
@@ -95,7 +95,7 @@ LeadTraker::Api.controllers :contact do
             end
 
             status 200
-            ret = {:success => get_true()}
+            ret = contact.format_for_app
 
         rescue CustomError => ce
 

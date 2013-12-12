@@ -19,4 +19,18 @@ class Expense
 
     belongs_to :user
 
+    def format_for_app
+
+    	return {
+    		:id => self.id,
+    		:name => self.name,
+    		:percent => self.percent,
+    		:value => self.value,
+    		:from => (self.from.present? ? self.from.strftime('%d-%m-%Y') : nil),
+    		:to => (self.to.present? ? self.to.strftime('%d-%m-%Y') : nil),
+    		:cap => self.cap
+    	}
+
+    end
+
 end

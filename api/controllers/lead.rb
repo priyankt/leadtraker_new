@@ -20,8 +20,8 @@ LeadTraker::Api.controllers :lead do
             end
 
             info = {}
-            info[:lead_type] = (lead_user.lead_type.present? ? {:id => lead_user.lead_type.id, :name => lead_user.lead_type.name} : nil)
-            info[:lead_source] = {:id => lead_user.lead_source.id, :name => lead_user.lead_source.name}
+            info[:lead_type] = (lead_user.lead_type.present? ? lead_user.lead_type.format_for_app : nil)
+            info[:lead_source] = (lead_user.lead_source.present? ? lead_user.lead_source.format_for_app : nil)
             info[:prop_address] = lead_user.lead.prop_address
             info[:prop_city] = lead_user.lead.prop_city
             info[:prop_state] = lead_user.lead.prop_state
@@ -33,8 +33,6 @@ LeadTraker::Api.controllers :lead do
             info[:primary_contact] = lead_user.primary_contact.format_for_app
             if lead_user.secondary_contact.present?
                 info[:secondary_contact] = lead_user.secondary_contact.format_for_app
-            else
-                info[:secondary_contact] = nil
             end
             ret[:info] = info
 
@@ -61,15 +59,7 @@ LeadTraker::Api.controllers :lead do
                     end
                 end
 
-                {
-                    :id => e.id,
-                    :name => e.name,
-                    :percent => e.percent,
-                    :value => e.value,
-                    :from => e.from,
-                    :to => e.to,
-                    :cap => e.cap
-                }
+                e.format_for_app
             }
             financial[:net_income] = net_income
 

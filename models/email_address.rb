@@ -10,5 +10,15 @@ class EmailAddress
   	property :deleted_at, ParanoidDateTime, :lazy => true
 
   	belongs_to :contact
+
+  	def format_for_app
+
+  		return {
+		    :id => self.id,
+            :type => self.type,
+            :value => self.value
+  		}
+
+  	end
   
 end

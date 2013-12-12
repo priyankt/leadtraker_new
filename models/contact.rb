@@ -36,18 +36,8 @@ class Contact
             :city => self.city,
             :state => self.state,
             :zip => self.zip,
-            :phone_numbers => self.phone_numbers.map{ |p|
-                {
-                    :type => p.type,
-                    :value => p.value
-                }
-            },
-            :email_addresses => self.email_addresses.map { |e|
-                {
-                    :type => e.type,
-                    :value => e.value
-                }
-            }
+            :phone_numbers => self.phone_numbers.map{ |p| p.format_for_app },
+            :email_addresses => self.email_addresses.map { |e| e.format_for_app }
         }
 
 	end

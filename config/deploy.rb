@@ -75,6 +75,12 @@ namespace :database do
   	end
 end
 
+namespace :database do
+  	task :seed do
+    	run "cd #{deploy_to}/current && bundle exec padrino rake db:seed -e production"
+  	end
+end
+
 desc "Hot-reload God configuration for the Resque worker"
 deploy.task :reload_god_config do
 	run "cd #{deploy_to}/current && bundle exec god stop resque"
@@ -86,4 +92,4 @@ deploy.task :reload_god_config do
 	run "cd #{deploy_to}/current && bundle exec god start resque-scheduler"
 end
 
-after :deploy, "gems:install", "database:upgrade", "deploy:reload_god_config"
+after :deploy, "gems:install", "database:upgrade", "database:seed" #, "deploy:reload_god_config"

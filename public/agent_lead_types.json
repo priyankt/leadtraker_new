@@ -1,1 +1,1 @@
-[{"name":"Buyer","lead_stages":[{"name":"Appointment"},{"name":"Listing"},{"name":"Contract"},{"name":"Closed"}]},{"name":"Seller","lead_stages":[{"name":"Appointment"},{"name":"Listing"},{"name":"Contract"},{"name":"Closed"}]}]
+[{"name":"Buyer","lead_stages":[{"name":"Appointment"},{"name":"Listing"},{"name":"Contract"},{"name":"Closed"}]},{"name":"Seller","share_leads":false,"lead_stages":[{"name":"Appointment"},{"name":"Listing"},{"name":"Contract"},{"name":"Closed"}]}]
