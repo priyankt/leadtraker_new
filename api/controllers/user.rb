@@ -76,8 +76,13 @@ LeadTraker::Api.controllers :user do
             if user_email.blank?
                 raise CustomError.new(['Please provide email address of user to invite'])
             end
+
+            af_user = User.first(:email => params[:sponsor_id])
+            if af_user.present? and @user.type == af_user.type
+                raise CustomError.new(["#{@user.type} cannot send affiliate request to another #{af_user.type}"])
+            end
+            
             if @user.type == :agent
-                af_user = User.first(:email => params[:sponsor_id], :type => :lender)
                 if af_user.blank?
                     # send email to lender that agent has invited you
                     Resque.enqueue(SendEmail, {
