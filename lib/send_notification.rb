@@ -19,7 +19,7 @@ class SendNotification
 
     		GCM.key = LeadTrakerConstants::ANDROID_SERVER_API_KEY
 
-			data = {:alert => params['alert'], :type => params['type'], :param => params['id']}
+			data = {:msg => params['msg']}
 			total = android_registration_ids.length
 			start = 0
 
@@ -32,7 +32,7 @@ class SendNotification
 				start = last + 1
 			end
 		else
-			puts "No registration ids supplied. Exiting.."
+			logger.debug "No registration ids supplied. Exiting.."
 		end
 
 		# code to send notification to ios

@@ -11,6 +11,7 @@
 
 DataMapper.logger = logger
 DataMapper::Property::String.length(255)
+DataMapper::Model.raise_on_save_failure = true
 
 case Padrino.env
   when :development then DataMapper.setup(:default, "sqlite3://" + Padrino.root('db', "lead_traker_development.db"))

@@ -6,19 +6,19 @@ class PhoneNumber
 	property :type , Enum[:mobile, :home, :office, :other], :default => :mobile, :required => true
 
 	property :created_at, DateTime, :lazy => true
-  	property :updated_at, DateTime, :lazy => true
-  	property :deleted_at, ParanoidDateTime, :lazy => true
+  property :updated_at, DateTime, :lazy => true
+  property :deleted_at, ParanoidDateTime, :lazy => true
 
-  	belongs_to :contact
+  belongs_to :contact
 
-  	def format_for_app
-  		
-  		return {
-		    :id => self.id,
-            :type => self.type,
-            :value => self.value
-  		}
+	def format_for_app
+		
+		return {
+	    :id => self.id,
+      :type => self.type,
+      :value => self.value
+		}
 
-  	end
+	end
   
 end

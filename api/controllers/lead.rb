@@ -116,41 +116,27 @@ LeadTraker::Api.controllers :lead do
     # Add new lead
     post '/' do
 
+        logger.debug params.inspect
+
         begin
-            lead = Lead.new
-            lead.prop_address = params[:address] if params.has_key?('address')
-            lead.prop_city = params[:city] if params.has_key?('city')
-            lead.prop_state = params[:state] if params.has_key?('state')
-            lead.prop_zip = params[:zip] if params.has_key?('zip')
-            lead.reference = params[:reference] if params.has_key?('reference')
 
-            lead_user = LeadUser.new(
-                :lead_type_id => params[:lead_type_id], 
-                :lead_source_id => params[:lead_source_id], 
-                :user_id => @user.id,
-                :primary_contact_id => params[:primary_contact_id],
-                :secondary_contact_id  => (params[:secondary_contact_id].present? and params[:secondary_contact_id].to_i > 0 ? params[:secondary_contact_id] : nil)
-            )
-
-            if params.has_key?('contacted') and params[:contacted]
-                lead_user.contact_date = DateTime.now 
-            end
-
-            lead.agent = @user
-            lead.lead_users << lead_user
-
-            if lead.valid?
-
-                Lead.transaction do
-                    begin
+            Lead.transaction do
+                begin
+                    lead_user = get_lead_user_from_params(params, @user)
+                    lead = get_lead_from_params(params, @user)
+        
+                    lead.lead_users << lead_user
+                    if lead.valid?
                         lead.save
+                    else
+                        raise CustomError.new(get_formatted_errors(lead.errors))
                     end
+                    
                 end
-
-                status 200
-                ret = {:success => get_true(), :id => lead.id}
-                
             end
+
+            status 200
+            ret = {:success => get_true()}
 
         rescue CustomError => ce
 

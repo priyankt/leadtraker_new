@@ -17,7 +17,7 @@ class Update
     def notify_users
 
     	Resque.enqueue(SendNotification, {
-            :ids => [self.user.id], 
+            :user_ids => [self.user.id], 
             :msg => self.msg, 
         })
 

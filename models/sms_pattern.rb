@@ -13,6 +13,7 @@ class SmsPattern
     def format_for_app
 
     	return {
+            :id => self.id,
     		:source_name => self.source_name,
     		:sms_pattern => self.sms_pattern,
     		:cols => self.cols

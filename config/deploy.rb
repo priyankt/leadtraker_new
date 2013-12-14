@@ -83,13 +83,13 @@ end
 
 desc "Hot-reload God configuration for the Resque worker"
 deploy.task :reload_god_config do
-	run "cd #{deploy_to}/current && bundle exec god stop resque"
+	run "cd #{deploy_to}/current && bundle exec god stop leadtraker-resque"
 	run "cd #{deploy_to}/current && bundle exec god load #{File.join deploy_to, 'current', 'config', 'resque.god'}"
-	run "cd #{deploy_to}/current && bundle exec god start resque"
+	run "cd #{deploy_to}/current && bundle exec god start leadtraker-resque"
 
-	run "cd #{deploy_to}/current && bundle exec god stop resque-scheduler"
+	run "cd #{deploy_to}/current && bundle exec god stop leadtraker-resque-scheduler"
 	run "cd #{deploy_to}/current && bundle exec god load #{File.join deploy_to, 'current', 'config', 'resque_scheduler.god'}"
-	run "cd #{deploy_to}/current && bundle exec god start resque-scheduler"
+	run "cd #{deploy_to}/current && bundle exec god start leadtraker-resque-scheduler"
 end
 
-after :deploy, "gems:install", "database:upgrade", "database:seed" #, "deploy:reload_god_config"
+after :deploy, "gems:install", "database:upgrade", "database:seed", "deploy:reload_god_config"
