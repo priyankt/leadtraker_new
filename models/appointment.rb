@@ -17,7 +17,7 @@ class Appointment
 
     def update_affiliates
 
-    	LeadUser.all(:lead_id => self.lead_id).each do |alu|
+    	LeadUser.all(:lead_id => self.lead_id, :lead_type_id.not => nil).each do |alu|
     		if self.shared and alu.user_id != self.user_id
     			user_update = Update.new(
     				:activity_type => :new_shared_task,

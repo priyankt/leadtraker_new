@@ -138,7 +138,7 @@ class LeadUser
   		# Lead type is blank means it is a shared lead  that is being added.
 	  	# Add this to user updates
 	  	if self.lead_type.blank?
-	  		msg = "New shared lead from #{self.lead.agent.fullname}"
+	  		msg = "New shared lead from '#{self.lead.agent.fullname}'"
 	  		user_update = Update.new(
 	  			:activity_type => :new_shared_lead, 
 	  			:msg => msg,
@@ -157,7 +157,7 @@ class LeadUser
                     :id => self.lead.id,
                 })
 	  		else
-	  			puts user_update.errors.inspect
+	  			logger.debug user_update.errors.inspect
 	  		end
 	  	end
   	end
