@@ -11,33 +11,35 @@ class SendNotification
 
 	def self.perform(params)
 
-		user_ids = params['user_ids'].join(',')
-		android_registration_ids = repository(:default).adapter.select("SELECT android_token FROM users WHERE id in (#{user_ids}) and android_token is not null")
-    	
-    	android_response = ""
-    	if android_registration_ids.length > 0
+		if params['ids'].present? and params['message'].present?
+			user_ids = params['ids'].join(',')
+			android_registration_ids = repository(:default).adapter.select("SELECT android_token FROM users WHERE id in (#{user_ids}) and android_token is not null")
+	    	
+	    	android_response = ""
+	    	if android_registration_ids.length > 0
 
-    		GCM.key = LeadTrakerConstants::ANDROID_SERVER_API_KEY
+	    		GCM.key = LeadTrakerConstants::ANDROID_SERVER_API_KEY
 
-			data = {:msg => params['msg']}
-			total = android_registration_ids.length
-			start = 0
+				data = {message: params['message']}
+				total = android_registration_ids.length
+				start = 0
 
-			while start < total
-				# minus 1 since starting from 0
-				last = [start + (ANDROID_BATCH_LIMIT - 1), total - 1].min
-				chunk = android_registration_ids[start..last]
-				response = GCM.send_notification( chunk, data )
-				android_response = android_response + response.to_json
-				start = last + 1
+				while start < total
+					# minus 1 since starting from 0
+					last = [start + (ANDROID_BATCH_LIMIT - 1), total - 1].min
+					chunk = android_registration_ids[start..last]
+					response = GCM.send_notification( chunk, data )
+					android_response = android_response + response.to_json
+					start = last + 1
+				end
+			else
+				logger.debug "No registration ids supplied. Exiting.."
 			end
-		else
-			logger.debug "No registration ids supplied. Exiting.."
-		end
 
-		# code to send notification to ios
-	
-		# TODO: Error handling & other stuff
+			# code to send notification to ios
+		
+			# TODO: Error handling & other stuff
+		end
 
   	end
 

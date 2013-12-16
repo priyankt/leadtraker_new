@@ -176,4 +176,15 @@ LeadTraker::Api.controllers :user do
 
     end
 
+    # Update gcm/ios token for server notifications
+    put '/token' do
+
+        if params[:android_token].present?
+            @user.update(:android_token => params[:android_token])
+        end
+
+        return {:success => get_true()}.to_json
+
+    end
+
 end
