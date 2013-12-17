@@ -41,8 +41,7 @@ LeadTraker::Api.controllers :expense do
 
     # Update lead_expense
     put '/' do
-        puts params.inspect
-
+        
         begin
             
             expenses = JSON.parse params[:expenses] if params.has_key?('expenses')

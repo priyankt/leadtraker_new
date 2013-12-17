@@ -29,6 +29,7 @@ LeadTraker::Api.controllers :lead do
             info[:reference] = lead_user.lead.reference
             info[:agent_name] = lead_user.lead.agent.fullname
             info[:status] = lead_user.status
+            info[:dttm] = lead_user.created_at
             info[:current_stage_id] = (lead_user.current_stage.present? ? lead_user.current_stage.lead_stage.id : nil)
             info[:primary_contact] = lead_user.primary_contact.format_for_app
             if lead_user.secondary_contact.present?
@@ -45,7 +46,7 @@ LeadTraker::Api.controllers :lead do
 
             net_income = 0
             if lead_user.gross.present? and lead_user.commission.present?
-                net_income = lead_user.gross * lead_user.commission/100
+                net_income = lead_user.gross * lead_user.commission / 100.0
             end
 
             net_commission = net_income
@@ -61,6 +62,7 @@ LeadTraker::Api.controllers :lead do
 
                 e.format_for_app
             }
+
             financial[:net_income] = net_income
 
             ret[:financial] = financial
