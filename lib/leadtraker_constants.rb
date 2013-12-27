@@ -8,4 +8,6 @@ class LeadTrakerConstants
 
 	EMAIL_HOST = ''
 
+	EMAIL_DOMAIN = ''
+
 end

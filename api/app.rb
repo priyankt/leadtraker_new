@@ -49,9 +49,13 @@ module LeadTraker
 
         set :delivery_method, :smtp => {
             :address         => LeadTrakerConstants::EMAIL_HOST,
+            :domain          => LeadTrakerConstants::EMAIL_DOMAIN,
             :port            => LeadTrakerConstants::EMAIL_PORT,
             :user_name       => LeadTrakerConstants::EMAIL_FROM,
             :password        => LeadTrakerConstants::EMAIL_KEY,
+            :authentication  => :plain,
+            :openssl_verify_mode  => 'none',
+            :enable_starttls_auto => true  
         }
         
     end
