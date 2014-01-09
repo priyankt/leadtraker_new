@@ -9,10 +9,10 @@ Bundler.require(:default, PADRINO_ENV)
 
 ##
 # ## Enable devel logging
-Padrino::Logger::Config[:development][:stream] = :stderr
-Padrino::Logger::Config[:development][:log_level] = :debug
+# Padrino::Logger::Config[:development][:stream] = :stderr
+# Padrino::Logger::Config[:development][:log_level] = :debug
 
-Padrino::Logger::Config[:production][:log_level] = :fatal
+# Padrino::Logger::Config[:production][:log_level] = :fatal
 
 #
 #
