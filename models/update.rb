@@ -13,6 +13,7 @@ class Update
     belongs_to :user
 
     after :save, :notify_users
+    after :create, :notify_users
 
     def notify_users
 

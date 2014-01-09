@@ -104,6 +104,13 @@ LeadTraker::Api.controllers :user do
                         uaf = UserAffiliate.new(:agent_id => @user.id, :lender_id => af_user.id)
                         if uaf.valid?
                             uaf.save
+                            
+                            Update.create(
+                                :activity_type => :request_received, 
+                                :msg => "New request from agent '#{@user.fullname}'",
+                                :user_id => af_user.id
+                            )
+                            
                             ret = {
                                 :success => get_true(), 
                                 :affiliate => {
