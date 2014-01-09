@@ -97,9 +97,10 @@ LeadTraker::Api.controllers :user do
                         :msg => "Invitation email has been sent to email #{params[:sponsor_id]}"
                     }
                 else
-                    # if user exists get current active lender
+                    # If lender exists in the system, then check if the agent has already some other active lender
                     active_lender = UserAffiliate.first(:status => :accepted, :agent_id => @user.id)
-                    if active_lender.lender_id != af_user.id
+                    if active_lender.blank? or active_lender.lender_id != af_user.id
+                        # create user affiliate record for new lender
                         uaf = UserAffiliate.new(:agent_id => @user.id, :lender_id => af_user.id)
                         if uaf.valid?
                             uaf.save
