@@ -11,18 +11,23 @@ class UserAffiliate
 	belongs_to :lender, 'User', :key => true
 	belongs_to :agent, 'User', :key => true
 
-	after :save, :add_to_user_update
+	# after :save, :add_to_user_update
 	
-	def add_to_user_update
+	# def add_to_user_update
 	
-		user_update = Update.new(
-			:activity_type => :request_received, 
-			:msg => "Affiliate request from #{self.agent.fullname}", 
-			:data => {:id => self.id}
-		)
+	# 	user_update = Update.new(
+	# 		:activity_type => :request_received, 
+	# 		:msg => "Affiliate request from #{self.agent.fullname}", 
+	# 		:data => {:id => self.id}
+	# 		:user => (self.lender.updated_at > self.agent.updated_at)
+	# 	)
 		
-		user_update.save
+	# 	if user_update.vaild?
+	# 		user_update.save
+	# 	else
+	# 		logger.debug user.update.errors.inspect
+	# 	end
 
-	end
+	# end
 
 end

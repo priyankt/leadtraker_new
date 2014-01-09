@@ -82,67 +82,58 @@ LeadTraker::Api.controllers :user do
                 raise CustomError.new(["#{@user.type} cannot send affiliate request to another #{af_user.type}"])
             end
             
-            if @user.type == :agent
-                if af_user.blank?
-                    # send email to lender that agent has invited you
-                    Resque.enqueue(SendEmail, {
-                        :mailer_name => 'user_notifier',
-                        :email_type => 'invite_lender',
-                        :lender_email => user_email,
-                        :agent_id => @user.id
-                    })
+            if ( (@user.type == :lender) or (@user.type == :agent and af_user.blank?) )
+                # add a record in user invite which also sends email
+                ui = UserInvite.new(:invite_email => user_email, :user_id => @user.id)
+                if ui.valid?
+                    ui.save
                     ret = {
                         :success => get_true(), 
                         :affiliate => nil, 
                         :msg => "Invitation email has been sent to email #{params[:sponsor_id]}"
                     }
                 else
-                    # If lender exists in the system, then check if the agent has already some other active lender
-                    active_lender = UserAffiliate.first(:status => :accepted, :agent_id => @user.id)
-                    if active_lender.blank? or active_lender.lender_id != af_user.id
-                        # create user affiliate record for new lender
-                        uaf = UserAffiliate.new(:agent_id => @user.id, :lender_id => af_user.id)
-                        if uaf.valid?
-                            uaf.save
-                            
-                            Update.create(
-                                :activity_type => :request_received, 
-                                :msg => "New request from agent '#{@user.fullname}'",
-                                :user_id => af_user.id
-                            )
-                            
-                            ret = {
-                                :success => get_true(), 
-                                :affiliate => {
-                                    :id => uaf.id,
-                                    :fullname => uaf.lender.fullname,
-                                    :email => uaf.lender.email,
-                                    :phone => uaf.lender.phone,
-                                    :company => uaf.lender.company,
-                                    :status => uaf.status,
-                                    :dttm => uaf.created_at
-                                },
-                                :msg => "Affiliate request has been sent to Lender #{uaf.lender.fullname}"
-                            }
-                        else
-                            raise CustomError.new(get_formatted_errors(uaf.errors))
-                        end
-                    end
+                    raise CustomError.new(get_formatted_errors(ui.errors))
                 end
+                    
             else
-                # send email to agent that you have been invited by lender
-                Resque.enqueue(SendEmail, {
-                    :mailer_name => 'user_notifier',
-                    :email_type => 'invite_agent',
-                    :agent_email => user_email,
-                    :lender_id => @user.id
-                })
-
-                ret = {
-                    :success => get_true(), 
-                    :affiliate => nil, 
-                    :msg => "Invitation email has been sent to email #{params[:sponsor_id]}"
-                }
+                # If lender exists in the system, then check if the agent has already some other active lender
+                active_lender = UserAffiliate.first(:agent_id => @user.id)
+                if active_lender.blank? or active_lender.lender_id != af_user.id
+                    # create user affiliate record for new lender
+                    uaf = UserAffiliate.new(:agent_id => @user.id, :lender_id => af_user.id)
+                    if uaf.valid?
+                        uaf.save
+                        
+                        Update.create(
+                            :activity_type => :request_received, 
+                            :msg => "New request from agent '#{@user.fullname}'",
+                            :user_id => af_user.id
+                        )
+                        
+                        ret = {
+                            :success => get_true(), 
+                            :affiliate => {
+                                :id => uaf.id,
+                                :fullname => uaf.lender.fullname,
+                                :email => uaf.lender.email,
+                                :phone => uaf.lender.phone,
+                                :company => uaf.lender.company,
+                                :status => uaf.status,
+                                :dttm => uaf.created_at
+                            },
+                            :msg => "Affiliate request has been sent to Lender #{uaf.lender.fullname}"
+                        }
+                    else
+                        raise CustomError.new(get_formatted_errors(uaf.errors))
+                    end
+                elsif active_lender.type == :accepted
+                    raise CustomError.new(['Lender has already accepted your request.'])
+                elsif active_lender.type == :pending
+                    raise CustomError.new(['Your invitation is already pending with Lender'])
+                else
+                    active_lender.update(:status => :pending)
+                end
             end
 
             status 200

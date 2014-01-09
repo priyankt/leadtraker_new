@@ -81,6 +81,31 @@ LeadTraker::Api.controllers :setup do
 
     end
 
+    delete '/lead_source/:id' do
+        begin
+
+            if params[:id].blank?
+                raise "Invalid lead source. Please try again"
+            end
+            lead_source = LeadSource.get(params[:id])
+            if lead_source.destroy
+                status 200
+                ret = {:success => get_true()}
+            else
+                logger.debug lead_source.errors.inpsect
+                raise CustomError.new(get_formatted_errors(lead_source.errors.inpsect))
+            end
+
+        rescue CustomError => ce
+
+            status 400
+            ret = {:success => get_false(), :errors => ce.errors}
+            
+        end
+
+        return ret.to_json
+    end
+
     post '/lead_type' do
 
         begin
@@ -132,8 +157,61 @@ LeadTraker::Api.controllers :setup do
                 end
             end
 
+            if params.has_key?('deleted_stages') and params[:deleted_stages].present?
+                deleted_stage_ids = JSON.parse(params[:deleted_stages])
+                deleted_stage_ids.each do |ds_id|
+                    ds = LeadStage.get(ds_id)
+                    if ds.present?
+                        ds.destroy
+                    end
+                end
+            end
+
             status 200
             ret = lead_type.format_for_app
+
+        rescue CustomError => ce
+
+            status 400
+            ret = {:success => get_false(), :errors => ce.errors}
+            
+        end
+
+        return ret.to_json
+
+    end
+
+    delete '/lead_type/:id' do
+
+        begin
+            
+            lead_type = @user.lead_types.get(params[:id])
+            if lead_type.blank?
+                raise CustomError.new(['Invalid lead type provided.'])
+            end
+
+            if lead_type.lead_stages.destroy and lead_type.destroy
+                status 200
+                ret = {:success => get_true()}
+            else
+                raise CustomError.new(get_formatted_errors(lead_type.errors))
+            end
+
+            # lead_stages = JSON.parse(params[:lead_stages])
+            # lead_stages.each do |ls|
+            #     if ls['id'] > 0
+            #         stage = LeadStage.get(ls['id'])
+            #         stage.update(:name => ls['name'])
+            #     else
+            #         stage = LeadStage.new(:name => ls['name'])
+            #         stage.lead_type_id = lead_type.id
+            #         if stage.valid?
+            #             stage.save
+            #         else
+            #             raise CustomError.new(get_formatted_errors(stage.errors))
+            #         end
+            #     end
+            # end
 
         rescue CustomError => ce
 
@@ -195,6 +273,31 @@ LeadTraker::Api.controllers :setup do
             )
             status 200
             ret = expense.format_for_app
+
+        rescue CustomError => ce
+
+            status 400
+            ret = {:success => get_false(), :errors => ce.errors}
+            
+        end
+
+        return ret.to_json
+
+    end
+
+    delete '/expense/:id' do
+
+        logger.debug params.inspect
+        begin
+            
+            expense = Expense.get(params[:id])
+            if expense.destroy
+                status 200
+                ret = {:success => get_true()}
+            else
+                status 400
+                raise CustomError.new(get_formatted_errors(expense.errors))
+            end
 
         rescue CustomError => ce
 

@@ -33,8 +33,8 @@ class User
     has n, :user_affiliates, :child_key => [ :agent_id ]
     has n, :lenders, self, :through => :user_affiliates, :via => :lender 
 
-    before :save, :generate_sponsor_id
-    after :save, :setup_defaults
+    before :create, :generate_sponsor_id
+    after :create, :setup_defaults
     
     # Set sponsor id as email id only if type is lender
     def generate_sponsor_id
@@ -102,6 +102,18 @@ class User
                 end
             end
 
+        end
+
+        user_invites = UserInvite.all(:invite_email => self.email)
+        # check if any pending invites in user_invites
+        if user_invites.length > 0
+            user_invites.each do |ui|
+                if self.type == :lender
+                    UserAffiliate.create(:agent_id => ui.user.id, :lender_id => self.id)
+                else
+                    UserAffiliate.create(:agent_id => self.id, :lender_id => ui.user.id)
+                end
+            end
         end
     	
     end

@@ -12,7 +12,7 @@ LeadTraker::Api.controllers :affiliates do
     get '/' do
 
         if @user.type == :agent
-            affiliates = UserAffiliate.all(:agent_id => @user.id).map{ |af|
+            affiliates = UserAffiliate.all(:agent_id => @user.id, :order => [:created_at.asc]).map{ |af|
                 {
                     :id => af.id,
                     :fullname => af.lender.fullname,
@@ -24,7 +24,7 @@ LeadTraker::Api.controllers :affiliates do
                 }
             }
         else
-            affiliates = UserAffiliate.all(:lender_id => @user.id).map{ |af|
+            affiliates = UserAffiliate.all(:lender_id => @user.id, :order => [:created_at.asc]).map{ |af|
                 {
                     :id => af.id,
                     :fullname => af.agent.fullname,
